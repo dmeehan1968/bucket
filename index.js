@@ -31,6 +31,24 @@
 
             console.log('POST /report', req.body);
 
+            var report = req.body;
+
+            var found = report.timestamp.match(/^(\w+) (\d+), (\d+) at (\d+):(\d+)(\w+)$/);
+            console.log(found);
+
+            var month = [ 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'].indexOf(found[1]) + 1;
+            var day = Number(found[2]);
+            var year = Number(found[3]);
+            var hour = Number(found[4]);
+            var minute = Number(found[5]);
+            hour = hour + ([ 0, 12 ][[ 'AM', 'PM' ].indexOf(found[6])]);
+
+            report.timestamp = new Date(year, month, day, hour, minute);
+            report.items = report.message.match(/(\w+)/g);
+            delete report.message;
+
+            console.log(report);
+
             db.collection('reports').insertOne(req.body, function(error, result) {
 
                 assert.equal(null, error);
