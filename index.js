@@ -44,14 +44,14 @@
 
             console.log('Requesting Reminder:', topic);
 
-            //requestPromise.get({
-            //
-            //    uri: 'https://maker.ifttt.com/trigger/reminder/with/key/cXEKfmsT9_V-J4Q_3EJpcb',
-            //    method: 'POST',
-            //    json: true,
-            //    body: { value1: topic }
-            //
-            //}).catch(console.error);
+            requestPromise.get({
+
+                uri: 'https://maker.ifttt.com/trigger/reminder/with/key/cXEKfmsT9_V-J4Q_3EJpcb',
+                method: 'POST',
+                json: true,
+                body: { value1: topic }
+
+            }).catch(console.error);
 
         });
 
