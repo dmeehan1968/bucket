@@ -4,6 +4,7 @@
 
     var MongoClient = require('mongodb').MongoClient;
     var assert = require('assert');
+    var requestPromise = require('request-promise');
 
     assert.notEqual(null, process.env.MONGOLAB_URI, 'NO MongoDb Uri');
 
@@ -22,7 +23,6 @@
 
         app.get('/', function(req, res) {
 
-            console.log('GET /');
             res.status(200).send('Hello World');
 
         });
@@ -34,7 +34,6 @@
             var report = req.body;
 
             var found = report.timestamp.match(/^(\w+) (\d+), (\d+) at (\d+):(\d+)(\w+)$/);
-            console.log(found);
 
             var month = [ 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'].indexOf(found[1]) + 1;
             var day = Number(found[2]);
@@ -49,13 +48,22 @@
             });
             delete report.message;
 
-            console.log(report);
+            console.log('report:', report);
 
-            db.collection('reports').insertOne(req.body, function(error, result) {
+            db.collection('reports').insertOne(req.body, function(error) {
 
                 assert.equal(null, error);
 
-                console.log('report:', result.result);
+                var body = { 'value1': report.items.join(', ') };
+
+                requestPromise.get({
+
+                    uri: 'https://maker.ifttt.com/trigger/thanks/with/key/cXEKfmsT9_V-J4Q_3EJpcb',
+                    method: 'POST',
+                    json: true,
+                    body: body
+
+                }).catch(console.error);
 
                 res.status(200).end();
 
@@ -66,8 +74,6 @@
         app.listen(app.get('port'), function() {
             console.log('Node app running on port', app.get('port'));
         });
-
-        //db.close();
 
     });
 
