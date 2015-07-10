@@ -11,6 +11,7 @@
   "dependencies": {
     "body-parser": "^1.13.2",
     "express": "^4.13.1",
-    "mongodb": "^2.0.36"
+    "mongodb": "^2.0.36",
+    "request-promise": "^0.4.2"
   }
 }
