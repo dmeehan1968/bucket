@@ -91,7 +91,6 @@
             report.items = report.message.match(/(\w+)/g).map(function(item) {
                 return item.toLowerCase();
             });
-            delete report.message;
 
             console.log('report:', report);
 
