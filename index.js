@@ -44,7 +44,9 @@
             hour = hour + ([ 0, 12 ][[ 'AM', 'PM' ].indexOf(found[6])]);
 
             report.timestamp = new Date(year, month, day, hour, minute);
-            report.items = report.message.match(/(\w+)/g);
+            report.items = report.message.match(/(\w+)/g).map(function(item) {
+                return item.toLowerCase();
+            });
             delete report.message;
 
             console.log(report);
