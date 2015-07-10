@@ -12,6 +12,7 @@
     "body-parser": "^1.13.2",
     "express": "^4.13.1",
     "mongodb": "^2.0.36",
+    "poisson-process": "^0.2.1",
     "request-promise": "^0.4.2"
   }
 }

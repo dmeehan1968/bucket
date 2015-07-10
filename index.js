@@ -5,12 +5,57 @@
     var MongoClient = require('mongodb').MongoClient;
     var assert = require('assert');
     var requestPromise = require('request-promise');
+    var PoissonProcess = require('poisson-process');
 
     assert.notEqual(null, process.env.MONGOLAB_URI, 'NO MongoDb Uri');
 
     MongoClient.connect(process.env.MONGOLAB_URI, function(err, db) {
 
         assert.equal(null, err);
+
+        var startHour = process.env.START_HOUR || 7;
+        var endHour = process.env.END_HOUR || 22;
+
+        assert.ok(endHour > startHour, "END_HOUR Must be Greater Than START_HOUR");
+
+        var reminders = process.env.REMINDERS || 12;
+
+        console.log(reminders, 'Reminders between', startHour, 'and', endHour);
+
+        var interval = new Date(((endHour - startHour) / reminders) * (1000 * 60 * 60));
+
+        console.log('interval:', interval.getHours(), 'hours', interval.getMinutes(), 'minutes', interval.getSeconds(), 'seconds');
+
+        var reminderProc = PoissonProcess.create(interval.valueOf(), function() {
+
+            var now = new Date();
+
+            if (now.getHours() < startHour || now.getHours() > endHour) {
+                return;
+            }
+
+            var topics = [
+                'Wearing',
+                "Company",
+                "Activity"
+            ];
+
+            var topic = topics[Math.floor(Math.random()*topics.length)];
+
+            console.log('Requesting Reminder:', topic);
+
+            //requestPromise.get({
+            //
+            //    uri: 'https://maker.ifttt.com/trigger/reminder/with/key/cXEKfmsT9_V-J4Q_3EJpcb',
+            //    method: 'POST',
+            //    json: true,
+            //    body: { value1: topic }
+            //
+            //}).catch(console.error);
+
+        });
+
+        reminderProc.start();
 
         var express = require('express');
         var parser = require('body-parser');
