@@ -2,28 +2,53 @@
 
     'use strict';
 
-    var express = require('express');
-    var app = express();
+    var MongoClient = require('mongodb').MongoClient;
+    var assert = require('assert');
 
-    app.set('port', process.env.PORT || 5000);
+    assert.notEqual(null, process.env.MONGOLAB_URI, 'NO MongoDb Uri');
 
-    app.use(express.static(__dirname + '/public'));
+    MongoClient.connect(process.env.MONGOLAB_URI, function(err, db) {
 
-    app.get('/', function(req, res) {
+        assert.equal(null, err);
 
-        console.log('GET /');
-        res.status(200).send('Hello World');
+        var express = require('express');
+        var parser = require('body-parser');
 
-    });
+        var app = express();
+        app.set('port', process.env.PORT || 5000);
 
-    app.post('/report', function(req, res) {
+        app.use(express.static(__dirname + '/public'));
+        app.use(parser.json());
 
-        console.log('POST /report');
+        app.get('/', function(req, res) {
 
-    });
+            console.log('GET /');
+            res.status(200).send('Hello World');
 
-    app.listen(app.get('port'), function() {
-        console.log('Node app running on port', app.get('port'));
+        });
+
+        app.post('/report', function(req, res) {
+
+            console.log('POST /report', req.body);
+
+            db.collection('reports').insertOne(req.body, function(error, result) {
+
+                assert.equal(null, error);
+
+                console.log('report:', result.result);
+
+                res.status(200).end();
+
+            });
+
+        });
+
+        app.listen(app.get('port'), function() {
+            console.log('Node app running on port', app.get('port'));
+        });
+
+        //db.close();
+
     });
 
 })();
