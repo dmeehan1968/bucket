@@ -18,45 +18,50 @@
 
         assert.ok(endHour > startHour, "END_HOUR Must be Greater Than START_HOUR");
 
-        var reminders = process.env.REMINDERS || 12;
+        var reminderProc;
 
-        console.log(reminders, 'Reminders between', startHour, 'and', endHour);
+        if (process.env.REMINDERS !== '0') {
 
-        var interval = new Date(((endHour - startHour) / reminders) * (1000 * 60 * 60));
+            var reminders = process.env.REMINDERS || 12;
 
-        console.log('interval:', interval.getHours(), 'hours', interval.getMinutes(), 'minutes', interval.getSeconds(), 'seconds');
+            console.log(reminders, 'Reminders between', startHour, 'and', endHour);
 
-        var reminderProc = PoissonProcess.create(interval.valueOf(), function() {
+            var interval = new Date(((endHour - startHour) / reminders) * (1000 * 60 * 60));
 
-            var now = new Date();
+            console.log('interval:', interval.getHours(), 'hours', interval.getMinutes(), 'minutes', interval.getSeconds(), 'seconds');
 
-            if (now.getHours() < startHour || now.getHours() > endHour) {
-                return;
-            }
+            reminderProc = PoissonProcess.create(interval.valueOf(), function() {
 
-            var topics = [
-                'Wearing',
-                "Company",
-                "Activity"
-            ];
+                var now = new Date();
 
-            var topic = topics[Math.floor(Math.random()*topics.length)];
+                if (now.getHours() < startHour || now.getHours() > endHour) {
+                    return;
+                }
 
-            console.log('Requesting Reminder:', topic);
+                var topics = [
+                    'Wearing',
+                    "Company",
+                    "Activity"
+                ];
 
-            requestPromise.get({
+                var topic = topics[Math.floor(Math.random()*topics.length)];
 
-                uri: 'https://maker.ifttt.com/trigger/reminder/with/key/cXEKfmsT9_V-J4Q_3EJpcb',
-                method: 'POST',
-                json: true,
-                body: { value1: topic }
+                console.log('Requesting Reminder:', topic);
 
-            }).catch(console.error);
+                requestPromise.get({
 
-        });
+                    uri: 'https://maker.ifttt.com/trigger/reminder/with/key/cXEKfmsT9_V-J4Q_3EJpcb',
+                    method: 'POST',
+                    json: true,
+                    body: { value1: topic }
 
-        reminderProc.start();
+                }).catch(console.error);
 
+            });
+
+            reminderProc.start();
+
+        }
         var express = require('express');
         var parser = require('body-parser');
 
@@ -74,20 +79,13 @@
 
         app.post('/report', function(req, res) {
 
-            console.log('POST /report', req.body);
+            console.log('query:', req.query);
 
-            var report = req.body;
+            var report = {
+                message: req.query.Body,
+                timestamp: new Date()
+            };
 
-            var found = report.timestamp.match(/^(\w+) (\d+), (\d+) at (\d+):(\d+)(\w+)$/);
-
-            var month = [ 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'].indexOf(found[1]) + 1;
-            var day = Number(found[2]);
-            var year = Number(found[3]);
-            var hour = Number(found[4]);
-            var minute = Number(found[5]);
-            hour = hour + ([ 0, 12 ][[ 'AM', 'PM' ].indexOf(found[6])]);
-
-            report.timestamp = new Date(year, month, day, hour, minute);
             report.items = report.message.match(/(\w+)/g).map(function(item) {
                 return item.toLowerCase();
             });
@@ -125,7 +123,7 @@
 
             server.close(function() {
 
-                reminderProc.stop();
+                reminderProc && reminderProc.stop();
                 db.close();
 
                 process.exit(0);
