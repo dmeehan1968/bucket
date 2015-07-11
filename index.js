@@ -70,7 +70,7 @@
 
         app.use(express.static(__dirname + '/public'));
         app.use(parser.json());
-        app.use(parser.urlencoded());
+        app.use(parser.urlencoded({ extended: true }));
 
         app.get('/', function(req, res) {
 
@@ -85,7 +85,7 @@
             console.log('body:', req.body);
 
             var report = {
-                message: req.query.Body,
+                message: req.body.Body,
                 timestamp: new Date()
             };
 
