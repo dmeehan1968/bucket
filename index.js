@@ -89,7 +89,7 @@
                 timestamp: new Date()
             };
 
-            report.items = report.message.match(/(\w+)/g).map(function(item) {
+            report.items = report.message.match(/(\S+)/g).map(function(item) {
                 return item.toLowerCase();
             });
 
@@ -120,8 +120,6 @@
 
         app.post('/reporter', function(req, res) {
 
-            console.log(req.body);
-
             requestPromise.get({
 
                 uri: req.body.uri,
@@ -129,11 +127,11 @@
 
             }).then(function(report) {
 
-                console.log(report);
-
                 db.collection('reporter').insertOne(report, function(error) {
 
                     assert.equal(null, error);
+
+                    console.log('Imported:', req.body.uri);
 
                 });
 
