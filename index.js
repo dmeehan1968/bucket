@@ -115,6 +115,16 @@
 
         });
 
+        process.on('SIGTERM', function() {
+            console.log('SIGTERM, closing...');
+            app.close();
+        });
+
+        app.on('close', function() {
+            reminderProc.stop();
+            db.close();
+        });
+
         app.listen(app.get('port'), function() {
             console.log('Node app running on port', app.get('port'));
         });
