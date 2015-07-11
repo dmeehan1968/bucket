@@ -121,7 +121,19 @@
         app.post('/reporter', function(req, res) {
 
             console.log(req.body);
-            res.status(200);
+
+            requestPromise.get({
+
+                uri: req.body.uri,
+                json: true
+
+            }).then(function(report) {
+
+                console.log(report);
+
+            }).catch(console.error);
+
+            res.status(200).end();
 
         });
 
