@@ -70,6 +70,7 @@
 
         app.use(express.static(__dirname + '/public'));
         app.use(parser.json());
+        app.use(parser.urlencoded());
 
         app.get('/', function(req, res) {
 
