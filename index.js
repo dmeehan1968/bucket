@@ -111,7 +111,7 @@
                 }).catch(console.error);
 
                 res.
-                    set('Content-Type:', 'text/xml')
+                    set('Content-Type', 'text/xml')
                     .send('<?xml version="1.0" encoding="UTF-8"?><Response></Response>');
 
             });
