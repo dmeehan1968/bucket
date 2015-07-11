@@ -115,19 +115,37 @@
 
         });
 
-        process.on('SIGTERM', function() {
-            console.log('SIGTERM, closing...');
-            app.close();
-        });
-
-        app.on('close', function() {
-            reminderProc.stop();
-            db.close();
-        });
-
-        app.listen(app.get('port'), function() {
+        var server = app.listen(app.get('port'), function() {
             console.log('Node app running on port', app.get('port'));
         });
+
+        function shutdown() {
+
+            console.log('Shutdown...');
+
+            server.close(function() {
+
+                reminderProc.stop();
+                db.close();
+
+                process.exit(0);
+
+            });
+
+            var timeout = setTimeout(function() {
+
+                console.log('Server failed to shutdown in normal time, terminating...');
+
+                process.exit(0);
+
+            }, 10 * 1000);
+
+            timeout.unref();
+
+        }
+
+        process.on('SIGTERM', shutdown);
+        process.on('SIGINT', shutdown);
 
     });
 
