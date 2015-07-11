@@ -131,6 +131,12 @@
 
                 console.log(report);
 
+                db.collection('reporter').insertOne(report, function(error) {
+
+                    assert.equal(null, error);
+
+                });
+
             }).catch(console.error);
 
             res.status(200).end();
