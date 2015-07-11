@@ -110,7 +110,9 @@
 
                 }).catch(console.error);
 
-                res.status(200).end();
+                res.
+                    set('Content-Type:', 'text/xml')
+                    .send('<?xml version="1.0" encoding="UTF-8"?><Response></Response>');
 
             });
 
