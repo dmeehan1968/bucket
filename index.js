@@ -98,7 +98,7 @@
 
                 assert.equal(null, error);
 
-                var body = { 'value1': report.items.join(', ') };
+                var body = { 'value1': report.message };
 
                 requestPromise.get({
 
