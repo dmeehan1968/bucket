@@ -95,7 +95,7 @@
 
             console.log('report:', report);
 
-            db.collection('reports').insertOne(req.body, function(error) {
+            db.collection('reports').insertOne(report, function(error) {
 
                 assert.equal(null, error);
 
