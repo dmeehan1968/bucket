@@ -118,6 +118,13 @@
 
         });
 
+        app.post('/reporter', function(req, res) {
+
+            console.log(req.body);
+            res.status(200);
+
+        });
+
         var server = app.listen(app.get('port'), function() {
             console.log('Node app running on port', app.get('port'));
         });
