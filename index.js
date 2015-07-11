@@ -80,9 +80,9 @@
 
         app.post('/report', function(req, res) {
 
-            console.log('query:', req.query);
-            console.log('params:', req.params);
-            console.log('body:', req.body);
+            //console.log('query:', req.query);
+            //console.log('params:', req.params);
+            //console.log('body:', req.body);
 
             var report = {
                 message: req.body.Body,
